@@ -1,7 +1,10 @@
 from tkinter import *
 from tkinter.ttk import Treeview
+
+from pymongo.network import command
+
 from utils import cargar, set_tabla
-from functions import insertar_datos, vaciar, buscar
+from functions import insertar_datos, vaciar, buscar, enviar_contacto, seleccion_contacto, borrar_contacto
 
 
 ##### CREAR WIDGETS Y EL ROOT #####
@@ -25,9 +28,9 @@ apellido_entrada = Entry(marco_campos)
 numero_entrada = Entry(marco_campos)
 email_entrada = Entry(marco_campos)
 
-boton_enviar = Button(marco_botones, text="Enviar")
-boton_borrar = Button(marco_botones, text="Borrar")
-boton_editar = Button(marco_botones, text="Editar")
+boton_enviar = Button(marco_botones, text="Enviar", state="normal", command=lambda: enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada))
+boton_borrar = Button(marco_botones, text="Borrar", state="disabled", command=lambda: borrar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar))
+boton_editar = Button(marco_botones, text="Editar", state="disabled")
 
 cabecera = ("Nombre", "Apellido", "Número", "Correo")
 tabla = Treeview(marco_derecho, columns=cabecera, show="headings")
@@ -71,6 +74,7 @@ marco_botones.pack(fill="x", expand=1, side=BOTTOM, anchor="w", pady=(10, 0))
 
 cargar()
 
+root.bind("<Button-1>", lambda event=None: seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla, boton_editar, boton_borrar, boton_enviar))
 root.config(menu=menu)
 root.mainloop()
 
