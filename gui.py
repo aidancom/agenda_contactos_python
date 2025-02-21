@@ -1,7 +1,7 @@
-from connection import columna
 from tkinter import *
 from tkinter.ttk import Treeview
-
+from utils import cargar, set_tabla
+from functions import insertar_datos, vaciar, buscar
 
 
 ##### CREAR WIDGETS Y EL ROOT #####
@@ -35,13 +35,17 @@ for insert in cabecera:
     tabla.column(column=insert, width=100)
     tabla.heading(insert, text=insert)
 
+set_tabla(tabla)
+
 menu = Menu(root, tearoff=0)
 submenu_1 = Menu(menu, tearoff=0)
-submenu_1.add_command(label="Buscar")
+submenu_1.add_command(label="Buscar contacto", command=lambda: buscar(tabla))
+submenu_1.add_command(label="Insertar registros", command=insertar_datos)
+submenu_1.add_command(label="Vaciar base de datos", command=vaciar)
 menu.add_cascade(label="Opciones", menu=submenu_1)
 
 
-##### CARGAR WIDGETS EN ROOT #####
+##### CARGAR WIDGETS EN ROOT y REGISTROS EN LA TABLA #####
 
 
 for boton in [boton_enviar, boton_borrar, boton_editar]:
@@ -64,6 +68,8 @@ marco_derecho.pack(fill="both", expand=1, side=LEFT)
 
 marco_campos.pack(fill="x", expand=1)
 marco_botones.pack(fill="x", expand=1, side=BOTTOM, anchor="w", pady=(10, 0))
+
+cargar()
 
 root.config(menu=menu)
 root.mainloop()
