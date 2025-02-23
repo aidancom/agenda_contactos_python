@@ -61,9 +61,11 @@ def enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
         numero = int(numero_entrada.get())
         email = email_entrada.get().lower()
         if nombre and apellido and numero and email:
-            contacto = {"nombre": nombre, "apellido": apellido, "numero": numero, "email": email, "favorito": False}
+            contacto = {"nombre": nombre, "apellido": apellido, "numero": numero, "correo": email, "favorito": False}
             columna.insert_one(contacto)
             messagebox.showinfo("Hecho", "Contacto añadido con éxito")
+            for entrada in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
+                entrada.delete(0, END)
             borrar()
             cargar()
         else:
@@ -108,3 +110,32 @@ def borrar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
 
     borrar()
     cargar()
+
+
+def editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla):
+    seleccion = tabla.selection()
+    tabla_registro = list((tabla.item(seleccion, "values")))
+    numero_buscar = tabla_registro[2]
+
+    nombre_actual = nombre_entrada.get()
+    apellido_actual = apellido_entrada.get()
+    numero_actual = numero_entrada.get()
+    email_actual = email_entrada.get()
+
+    filtro = {"numero": int(numero_buscar)}
+    datos_actuales = {"$set": {"nombre": nombre_actual, "apellido": apellido_actual, "numero": int(numero_actual), "correo": email_actual}}
+
+    columna.update_one(filtro, datos_actuales)
+
+    messagebox.showinfo("Editado", "Contacto editado con éxito")
+
+    for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
+        entradas.delete(0, END)
+
+    boton_editar.config(state="disabled")
+    boton_borrar.config(state="disabled")
+    boton_enviar.config(state="active")
+    borrar()
+    cargar()
+
+
