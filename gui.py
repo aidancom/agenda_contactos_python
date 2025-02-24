@@ -23,9 +23,9 @@ apellido_entrada = Entry(marco_campos)
 numero_entrada = Entry(marco_campos)
 email_entrada = Entry(marco_campos)
 
-boton_enviar = Button(marco_botones, text="Enviar", state="normal", command=lambda: enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada))
-boton_borrar = Button(marco_botones, text="Borrar", state="disabled", command=lambda: borrar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar))
-boton_editar = Button(marco_botones, text="Editar", state="disabled", command=lambda: editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla))
+boton_enviar = Button(marco_botones, text="Enviar", command=lambda: enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada))
+boton_borrar = Button(marco_botones, text="Borrar", command=lambda: borrar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada))
+boton_editar = Button(marco_botones, text="Editar", command=lambda: editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla))
 
 cabecera = ("Nombre", "Apellido", "Número", "Correo")
 tabla = Treeview(marco_derecho, columns=cabecera, show="headings")
@@ -77,7 +77,7 @@ marco_botones.pack(fill="x", expand=1, side=BOTTOM, anchor="w", pady=(10, 0))
 
 cargar()
 
-tabla.bind("<ButtonRelease-1>", lambda event: seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla, boton_editar, boton_borrar, boton_enviar))
+tabla.bind("<ButtonRelease-1>", lambda event: seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla))
 tabla.bind("<ButtonRelease-3>", lambda event: popup(event, tabla, root))
 root.config(menu=menu)
 root.mainloop()

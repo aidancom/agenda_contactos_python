@@ -96,66 +96,59 @@ def enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
 
 
 
-def seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla, boton_editar, boton_borrar, boton_enviar):
-    tabla_seleccion = tabla.selection()
-    for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
-        entradas.delete(0, END)
-    if tabla_seleccion:
-        tabla_registro = (tabla.item(tabla_seleccion, "values"))
-        nombre_entrada.insert(0, tabla_registro[0])
-        apellido_entrada.insert(0, tabla_registro[1])
-        numero_entrada.insert(0, tabla_registro[2])
-        email_entrada.insert(0, tabla_registro[3])
-        boton_borrar.config(state="active")
-        boton_editar.config(state="active")
-        boton_enviar.config(state="disabled")
+def seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla):
+        tabla_seleccion = tabla.selection()
+        for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
+            entradas.delete(0, END)
+        if tabla_seleccion:
+            tabla_registro = (tabla.item(tabla_seleccion, "values"))
+            nombre_entrada.insert(0, tabla_registro[0])
+            apellido_entrada.insert(0, tabla_registro[1])
+            numero_entrada.insert(0, tabla_registro[2])
+            email_entrada.insert(0, tabla_registro[3])
 
 
 
-def borrar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar):
-    nombre = nombre_entrada.get().capitalize()
-    apellido = apellido_entrada.get().capitalize()
-    numero = numero_entrada.get()
-    email = email_entrada.get().lower()
-    if nombre and apellido and numero and email:
-        contacto = {"nombre": nombre, "apellido": apellido, "numero": int(numero), "correo": email}
-        alerta = messagebox.askquestion("", "Seguro que desea eliminar este campo")
-        if alerta == 'yes':
-            columna.delete_one(contacto)
-            messagebox.showinfo("Hecho", "Contacto eliminado con éxito")
-            for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
-                entradas.delete(0, END)
-            boton_editar.config(state="disabled")
-            boton_borrar.config(state="disabled")
-            boton_enviar.config(state="active")
-            actualizar_tabla_y_base()
+def borrar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada):
+    if nombre_entrada.get() and apellido_entrada.get() and numero_entrada.get() and email_entrada.get():
+        nombre = nombre_entrada.get().capitalize()
+        apellido = apellido_entrada.get().capitalize()
+        numero = numero_entrada.get()
+        email = email_entrada.get().lower()
+        if nombre and apellido and numero and email:
+            contacto = {"nombre": nombre, "apellido": apellido, "numero": int(numero), "correo": email}
+            alerta = messagebox.askquestion("", "Seguro que desea eliminar este campo")
+            if alerta == 'yes':
+                columna.delete_one(contacto)
+                messagebox.showinfo("Hecho", "Contacto eliminado con éxito")
+                for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
+                    entradas.delete(0, END)
+                actualizar_tabla_y_base()
 
 
 
-def editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla):
-    seleccion = tabla.selection()
-    tabla_registro = list((tabla.item(seleccion, "values")))
-    numero_buscar = tabla_registro[2]
+def editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla):
+    if nombre_entrada.get() and apellido_entrada.get() and numero_entrada.get() and email_entrada.get():
+        seleccion = tabla.selection()
+        tabla_registro = list((tabla.item(seleccion, "values")))
+        numero_buscar = tabla_registro[2]
 
-    nombre_actual = nombre_entrada.get()
-    apellido_actual = apellido_entrada.get()
-    numero_actual = numero_entrada.get()
-    email_actual = email_entrada.get()
+        nombre_actual = nombre_entrada.get()
+        apellido_actual = apellido_entrada.get()
+        numero_actual = numero_entrada.get()
+        email_actual = email_entrada.get()
 
-    filtro = {"numero": int(numero_buscar)}
-    datos_actuales = {"$set": {"nombre": nombre_actual, "apellido": apellido_actual, "numero": int(numero_actual), "correo": email_actual}}
+        filtro = {"numero": int(numero_buscar)}
+        datos_actuales = {"$set": {"nombre": nombre_actual, "apellido": apellido_actual, "numero": int(numero_actual), "correo": email_actual}}
 
-    columna.update_one(filtro, datos_actuales)
+        columna.update_one(filtro, datos_actuales)
 
-    messagebox.showinfo("Editado", "Contacto editado con éxito")
+        messagebox.showinfo("Editado", "Contacto editado con éxito")
 
-    for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
-        entradas.delete(0, END)
+        for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
+            entradas.delete(0, END)
 
-    boton_editar.config(state="disabled")
-    boton_borrar.config(state="disabled")
-    boton_enviar.config(state="active")
-    actualizar_tabla_y_base()
+        actualizar_tabla_y_base()
 
 
 
@@ -267,14 +260,21 @@ def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos,
     ventana = Toplevel(root)
     ventana.title("Editor del programa")
     ventana.resizable(False, False)
-    Label(ventana, text="Colores", font=("Arial", 15, "bold")).pack(pady=(10, 10), padx=(10, 10), anchor='w')
+
+    Label(ventana, text="Colores", font=("Arial", 20, "bold")).pack(pady=(10, 10), padx=(10, 10), anchor='w')
+
     marco_primero = Frame(ventana)
     marco_1 = Frame(marco_primero)
     marco_2 = Frame(marco_primero)
+
+    Label(marco_1, text="Textos", font=5).pack(anchor='w', pady=(0, 10))
     Button(marco_1, text="Texto label", width=20, command=lambda: color(fondo=False, textos=True, botones=False, texto_botones=False)).pack(pady=(0, 10))
     Button(marco_1, text="Texto boton", width=20, command=lambda: color(fondo=False, textos=False, botones=False, texto_botones=True)).pack(pady=(0, 0))
+
+    Label(marco_2, text="Fondos", font=5).pack(anchor='w', pady=(0, 10))
     Button(marco_2, text="Fondo boton", width=20, command=lambda: color(fondo=False, textos=False, botones=True, texto_botones=False)).pack(pady=(0, 10))
     Button(marco_2, text="Fondo programa", width=20, command=lambda: color(fondo=True, textos=False, botones=False, texto_botones=False)).pack(pady=(0, 0))
+
     marco_primero.pack()
     marco_1.pack(fill='x', anchor='w', pady=(0, 10), padx=(10, 10), side=LEFT)
     marco_2.pack(fill='x', anchor='w', pady=(0, 10), padx=(10, 10), side=LEFT)
