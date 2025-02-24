@@ -1,8 +1,5 @@
-from tkinter import *
 from tkinter.ttk import Treeview
-
-from utils import cargar, set_tabla
-from functions import insertar_datos, vaciar, buscar, enviar_contacto, seleccion_contacto, borrar_contacto, editar_contacto
+from functions import *
 
 
 ##### CREAR WIDGETS Y EL ROOT #####
@@ -40,9 +37,16 @@ set_tabla(tabla)
 
 menu = Menu(root, tearoff=0)
 submenu_1 = Menu(menu, tearoff=0)
+submenu_1_1 = Menu(submenu_1, tearoff=0)
 submenu_1.add_command(label="Buscar contacto", command=lambda: buscar(tabla))
 submenu_1.add_command(label="Insertar registros", command=insertar_datos)
 submenu_1.add_command(label="Vaciar base de datos", command=vaciar)
+submenu_1.add_cascade(label="Exportar contactos", menu=submenu_1_1)
+submenu_1.add_command(label="Importar contactos", command=importar)
+submenu_1.add_command(label="Ver favoritos", command=lambda: ver_favoritos(tabla))
+submenu_1_1.add_command(label=".csv", command=lambda: exportar(tabla, exportar_csv=True, exportar_txt=False, exportar_json=False))
+submenu_1_1.add_command(label=".txt", command= lambda: exportar(tabla, exportar_csv=False, exportar_txt=True, exportar_json=False))
+submenu_1_1.add_command(label=".json", command= lambda: exportar(tabla, exportar_csv=False, exportar_txt=False, exportar_json=True))
 menu.add_cascade(label="Opciones", menu=submenu_1)
 
 
@@ -73,6 +77,7 @@ marco_botones.pack(fill="x", expand=1, side=BOTTOM, anchor="w", pady=(10, 0))
 cargar()
 
 tabla.bind("<ButtonRelease-1>", lambda event: seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla, boton_editar, boton_borrar, boton_enviar))
+tabla.bind("<ButtonRelease-3>", lambda event: popup(event, tabla, root))
 root.config(menu=menu)
 root.mainloop()
 
