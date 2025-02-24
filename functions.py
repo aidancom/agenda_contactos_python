@@ -1,4 +1,4 @@
-import tkinter.colorchooser
+import os, csv, pyperclip, json, tkinter.colorchooser
 
 from connection import columna
 from tkinter import *
@@ -6,10 +6,6 @@ from tkinter import simpledialog, messagebox
 from insert import insertar
 from utils import *
 
-import os
-import csv
-import pyperclip
-import json
 
 color_fondo = ""
 color_texto = ""
@@ -133,10 +129,10 @@ def editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
         tabla_registro = list((tabla.item(seleccion, "values")))
         numero_buscar = tabla_registro[2]
 
-        nombre_actual = nombre_entrada.get()
-        apellido_actual = apellido_entrada.get()
+        nombre_actual = nombre_entrada.get().capitalize()
+        apellido_actual = apellido_entrada.get().capitalize()
         numero_actual = numero_entrada.get()
-        email_actual = email_entrada.get()
+        email_actual = email_entrada.get().capitalize()
 
         filtro = {"numero": int(numero_buscar)}
         datos_actuales = {"$set": {"nombre": nombre_actual, "apellido": apellido_actual, "numero": int(numero_actual), "correo": email_actual}}
@@ -154,16 +150,21 @@ def editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
 
 def exportar(tabla, exportar_csv, exportar_txt, exportar_json):
     ruta = os.path.dirname(__file__)
+    ruta_directorio = f"{ruta}/archivos"
+
+    if not os.path.exists(ruta_directorio):
+        os.mkdir(ruta_directorio)
+
     if exportar_txt:
-        with open(f"{ruta}/archivos/contactos.txt", "w") as archivo:
+        with open(f"{ruta_directorio}/contactos.txt", "w") as archivo:
             for datos in tabla.get_children():
                 dato = tabla.item(datos, "values")
                 archivo.write(f"Nombre: {dato[0]}\nApellido: {dato[1]}\nTeléfono: {dato[2]}\nCorreo: {dato[3]}\n\n")
         abrir = messagebox.askquestion("Hecho", "Contactos exportados a txt con éxito, ¿Quieres abrir el archivo?")
         if abrir:
-            os.startfile(f"{ruta}/archivos/contactos.txt")
+            os.startfile(f"{ruta_directorio}/contactos.txt")
     if exportar_csv:
-        with open(f"{ruta}/archivos/contactos.csv", "w", newline="") as archivo:
+        with open(f"{ruta_directorio}/contactos.csv", "w", newline="") as archivo:
             writer = csv.writer(archivo)
             writer.writerow(["Nombre", "Apellido", "Teléfono", "Correo"])
             for datos in tabla.get_children():
@@ -171,17 +172,17 @@ def exportar(tabla, exportar_csv, exportar_txt, exportar_json):
                 writer.writerow(dato)
         abrir = messagebox.askquestion("Hecho", "Contactos exportados a csv con éxito, ¿Quieres abrir el archivo?")
         if abrir:
-            os.startfile(f"{ruta}/archivos/contactos.csv")
+            os.startfile(f"{ruta_directorio}/contactos.csv")
     if exportar_json:
         datos_exportar = columna.find({})
         datos = []
         for dato in datos_exportar:
             datos.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito']})
-        with open(f"{ruta}/archivos/contactos.json", "w") as archivo:
+        with open(f"{ruta_directorio}/contactos.json", "w") as archivo:
             json.dump(datos, archivo, indent=4)
         abrir = messagebox.askquestion("Hecho", "Contactos exportados a json con éxito, ¿Quieres abrir el archivo?")
         if abrir:
-            os.startfile(f"{ruta}/archivos/contactos.json")
+            os.startfile(f"{ruta_directorio}/contactos.json")
 
 
 
