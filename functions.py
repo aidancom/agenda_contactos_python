@@ -1,3 +1,5 @@
+import tkinter.colorchooser
+
 from connection import columna
 from tkinter import *
 from tkinter import simpledialog, messagebox
@@ -9,6 +11,13 @@ import csv
 import pyperclip
 import json
 
+color_fondo = ""
+color_texto = ""
+color_botones = ""
+color_borde_normal = ""
+color_borde_resaltado = ""
+grosor_borde = ""
+tipo_borde = ""
 
 
 def actualizar_tabla_y_base():
@@ -250,5 +259,47 @@ def importar():
         actualizar_tabla_y_base()
     except FileNotFoundError:
         messagebox.showerror("Error", "Archivo no encontrado")
+
+
+def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla):
+
+    ventana = Toplevel(root)
+    ventana.title("Editor del programa")
+    Label(ventana, text="Pulse el botón de la parte que quieras cambiar el color").pack(pady=(10, 10), padx=(10, 10))
+    marco_botones_1 = Frame(ventana)
+    Button(marco_botones_1, text="Textos", command=lambda: color(fondo=False, textos=True, botones=False)).pack(side=LEFT, padx=(10, 5))
+    Button(marco_botones_1, text="Botones", command=lambda: color(fondo=False, textos=False, botones=True)).pack(side=LEFT, padx=(5, 5))
+    Button(marco_botones_1, text="Fondo", command=lambda: color(fondo=True, textos=False, botones=False)).pack(side=LEFT, padx=(5, 10))
+    marco_botones_1.pack(fill='x', anchor='w', pady=(0, 10))
+    Button(ventana, text="Aceptar", command=lambda: editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla)).pack(padx=(5, 10), pady=(0, 10), anchor='e')
+
+def color(fondo, textos, botones):
+    global color_fondo, color_texto, color_botones
+    if fondo:
+        colors = tkinter.colorchooser.askcolor()
+        color_fondo = colors[1]
+    if textos:
+        colors = tkinter.colorchooser.askcolor()
+        color_texto = colors[1]
+    if botones:
+        colors = tkinter.colorchooser.askcolor()
+        color_botones = colors[1]
+
+
+def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla):
+    global color_fondo, color_texto, color_botones
+    if color_fondo:
+        for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email]:
+            cambio.config(bg=color_fondo)
+
+    if color_texto:
+        for cambio in [nombre, apellido, numero, email]:
+            cambio.config(fg=color_texto)
+
+    if color_botones:
+        for cambio in [boton_editar, boton_borrar, boton_enviar]:
+            cambio.config(bg=color_texto)
+    ventana.destroy()
+
 
 

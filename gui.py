@@ -48,6 +48,7 @@ submenu_1_1.add_command(label=".csv", command=lambda: exportar(tabla, exportar_c
 submenu_1_1.add_command(label=".txt", command= lambda: exportar(tabla, exportar_csv=False, exportar_txt=True, exportar_json=False))
 submenu_1_1.add_command(label=".json", command= lambda: exportar(tabla, exportar_csv=False, exportar_txt=False, exportar_json=True))
 menu.add_cascade(label="Opciones", menu=submenu_1)
+menu.add_cascade(label="Editor", command=lambda: editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla))
 
 
 ##### CARGAR WIDGETS EN ROOT y REGISTROS EN LA TABLA #####
