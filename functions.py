@@ -13,6 +13,7 @@ import json
 
 color_fondo = ""
 color_texto = ""
+color_texto_boton = ""
 color_botones = ""
 color_borde_normal = ""
 color_borde_resaltado = ""
@@ -265,16 +266,23 @@ def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos,
 
     ventana = Toplevel(root)
     ventana.title("Editor del programa")
-    Label(ventana, text="Pulse el botón de la parte que quieras cambiar el color").pack(pady=(10, 10), padx=(10, 10))
-    marco_botones_1 = Frame(ventana)
-    Button(marco_botones_1, text="Textos", command=lambda: color(fondo=False, textos=True, botones=False)).pack(side=LEFT, padx=(10, 5))
-    Button(marco_botones_1, text="Botones", command=lambda: color(fondo=False, textos=False, botones=True)).pack(side=LEFT, padx=(5, 5))
-    Button(marco_botones_1, text="Fondo", command=lambda: color(fondo=True, textos=False, botones=False)).pack(side=LEFT, padx=(5, 10))
-    marco_botones_1.pack(fill='x', anchor='w', pady=(0, 10))
+    ventana.resizable(False, False)
+    Label(ventana, text="Colores", font=("Arial", 15, "bold")).pack(pady=(10, 10), padx=(10, 10), anchor='w')
+    marco_primero = Frame(ventana)
+    marco_1 = Frame(marco_primero)
+    marco_2 = Frame(marco_primero)
+    Button(marco_1, text="Texto label", width=20, command=lambda: color(fondo=False, textos=True, botones=False, texto_botones=False)).pack(pady=(0, 10))
+    Button(marco_1, text="Texto boton", width=20, command=lambda: color(fondo=False, textos=False, botones=False, texto_botones=True)).pack(pady=(0, 0))
+    Button(marco_2, text="Fondo boton", width=20, command=lambda: color(fondo=False, textos=False, botones=True, texto_botones=False)).pack(pady=(0, 10))
+    Button(marco_2, text="Fondo programa", width=20, command=lambda: color(fondo=True, textos=False, botones=False, texto_botones=False)).pack(pady=(0, 0))
+    marco_primero.pack()
+    marco_1.pack(fill='x', anchor='w', pady=(0, 10), padx=(10, 10), side=LEFT)
+    marco_2.pack(fill='x', anchor='w', pady=(0, 10), padx=(10, 10), side=LEFT)
     Button(ventana, text="Aceptar", command=lambda: editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla)).pack(padx=(5, 10), pady=(0, 10), anchor='e')
 
-def color(fondo, textos, botones):
-    global color_fondo, color_texto, color_botones
+
+def color(fondo, textos, botones, texto_botones):
+    global color_fondo, color_texto, color_botones, color_texto_boton
     if fondo:
         colors = tkinter.colorchooser.askcolor()
         color_fondo = colors[1]
@@ -284,10 +292,14 @@ def color(fondo, textos, botones):
     if botones:
         colors = tkinter.colorchooser.askcolor()
         color_botones = colors[1]
+    if texto_botones:
+        colors = tkinter.colorchooser.askcolor()
+        color_texto_boton = colors[1]
+
 
 
 def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla):
-    global color_fondo, color_texto, color_botones
+    global color_fondo, color_texto, color_botones, texto_botones
     if color_fondo:
         for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email]:
             cambio.config(bg=color_fondo)
@@ -298,7 +310,11 @@ def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquier
 
     if color_botones:
         for cambio in [boton_editar, boton_borrar, boton_enviar]:
-            cambio.config(bg=color_texto)
+            cambio.config(bg=color_botones)
+
+    if color_texto_boton:
+        for cambio in [boton_editar, boton_borrar, boton_enviar]:
+            cambio.config(fg=color_texto_boton)
     ventana.destroy()
 
 
