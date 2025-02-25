@@ -19,7 +19,8 @@ def insertar(numero_registros):
             "apellido": apellido_registro,
             "numero": int(numero_registro),
             "correo": correo_registro,
-            "favorito": False
+            "favorito": False,
+            "privado": False
         }
 
         columna.insert_one(dato)

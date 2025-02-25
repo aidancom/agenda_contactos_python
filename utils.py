@@ -12,7 +12,8 @@ def set_tabla(tabla):
 def cargar_tabla():
     datos = columna.find({})
     for dato in datos:
-        tabla_global.insert("", "end", values=(dato['nombre'], dato['apellido'], dato['numero'], dato['correo']))
+        if not dato['privado']:
+            tabla_global.insert("", "end", values=(dato['nombre'], dato['apellido'], dato['numero'], dato['correo']))
 
 def cargar_estilos(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar):
 

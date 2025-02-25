@@ -1,4 +1,5 @@
 import os, csv, pyperclip, json, tkinter.colorchooser
+from imghdr import test_exr
 
 from connection import columna, columna_2
 from tkinter import *
@@ -200,8 +201,22 @@ def popup(event, tabla, root):
             popup.add_command(label="Agregar favorito", command=lambda: favoritos(item, agregar=True, quitar=False))
         else:
             popup.add_command(label="Quitar favorito", command=lambda: favoritos(item, agregar=False, quitar=True))
+        if not registro['privado']:
+            popup.add_command(label="Hacer privado", command=lambda: privado(item, privado=True, publico=False))
+        else:
+            popup.add_command(label="Hacer público", command=lambda: privado(item, privado=False, publico=True))
         popup.tk_popup(event.x_root, event.y_root, None)
 
+def privado(item, privado, publico):
+    datos = {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3]}
+    if privado:
+        datos_nuevos = {"$set": {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3], "privado": True}}
+        columna.update_one(datos, datos_nuevos)
+        actualizar_tabla_y_base()
+    if publico:
+        datos_nuevos = {"$set": {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3], "privado": False}}
+        columna.update_one(datos, datos_nuevos)
+        actualizar_tabla_y_base()
 
 
 def copiar_dato(item):
@@ -242,6 +257,48 @@ def ver_favoritos(tabla):
     favoritos = columna.aggregate(consulta)
     for favorito in favoritos:
         tabla.insert("", "end", values=(favorito['nombre'], favorito['apellido'], favorito['numero'], favorito['correo']))
+
+def acceso(tabla, root):
+
+    root.attributes("-disabled", True)
+
+    creedenciales = Toplevel(root)
+    creedenciales.title("Acceso")
+    creedenciales.resizable(False, False)
+
+    marco_creedenciales = Frame(creedenciales, pady=10, padx=10)
+
+    Label(marco_creedenciales, text="Acceso", font=("Arial", 15)).pack(pady=(0, 5))
+    Label(marco_creedenciales, text="Usuario").pack(anchor='w')
+    user = Entry(marco_creedenciales)
+    user.pack(pady=(0, 10))
+    Label(marco_creedenciales, text="Contraseña").pack(anchor='w')
+    password = Entry(marco_creedenciales, show="*")
+    password.pack(pady=(0, 10))
+    Button(marco_creedenciales, text="Aceptar", command=lambda: ver_privados(root, tabla, user, password, creedenciales)).pack(anchor='e')
+
+    marco_creedenciales.pack(fill="both", expand=1)
+
+    creedenciales.protocol("WM_DELETE_WINDOW", lambda: cerrar(root, creedenciales))
+
+
+
+
+def ver_privados(root, tabla, user, password, creedenciales):
+    if user.get() == 'admin' and password.get() == 'admin':
+        borrar_tabla()
+        consulta = [{"$match": {"privado": True}}]
+        privados = columna.aggregate(consulta)
+        for privado in privados:
+            tabla.insert("", "end",
+                         values=(privado['nombre'], privado['apellido'], privado['numero'], privado['correo']))
+        creedenciales.destroy()
+        cerrar(root, creedenciales)
+    else:
+        messagebox.showerror("Error", "Usuario o contraseña incorrectos")
+        cerrar(root, creedenciales)
+
+
 
 
 
