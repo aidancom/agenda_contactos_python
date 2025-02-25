@@ -19,9 +19,8 @@ tipo_borde = ""
 
 
 def actualizar_tabla_y_base():
-    borrar()
-    cargar()
-
+    borrar_tabla()
+    cargar_tabla()
 
 
 def insertar_datos():
@@ -59,7 +58,7 @@ def buscar(tabla):
         res = columna.aggregate(pipeline)
         contador = columna.count_documents({"numero": numero})
         if contador > 0:
-            borrar()
+            borrar_tabla()
             for registro in res:
                 tabla.insert("", "end", values=(registro['nombre'], registro['apellido'], registro['numero'], registro['correo']))
         else:
@@ -238,7 +237,7 @@ def favoritos(item, agregar, quitar):
 
 
 def ver_favoritos(tabla):
-    borrar()
+    borrar_tabla()
     consulta = [{"$match": {"favorito": True}}]
     favoritos = columna.aggregate(consulta)
     for favorito in favoritos:

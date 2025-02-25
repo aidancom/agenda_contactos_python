@@ -75,7 +75,8 @@ marco_derecho.pack(fill="both", expand=1, side=LEFT)
 marco_campos.pack(fill="x", expand=1)
 marco_botones.pack(fill="x", expand=1, side=BOTTOM, anchor="w", pady=(10, 0))
 
-cargar(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar)
+cargar_tabla()
+cargar_estilos(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar)
 
 tabla.bind("<ButtonRelease-1>", lambda event: seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla))
 tabla.bind("<ButtonRelease-3>", lambda event: popup(event, tabla, root))

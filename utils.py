@@ -9,12 +9,15 @@ def set_tabla(tabla):
     tabla_global = tabla
 
 
-
-def cargar(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar):
+def cargar_tabla():
     datos = columna.find({})
-    colores = columna_2.find({})
     for dato in datos:
         tabla_global.insert("", "end", values=(dato['nombre'], dato['apellido'], dato['numero'], dato['correo']))
+
+def cargar_estilos(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar):
+
+    colores = columna_2.find({})
+
     for color in colores:
         if color['colorBackground']:
             for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email]:
@@ -34,6 +37,6 @@ def cargar(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos,
 
 
 
-def borrar():
+def borrar_tabla():
     for fila in tabla_global.get_children():
         tabla_global.delete(fila)
