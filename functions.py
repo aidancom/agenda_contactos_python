@@ -1,11 +1,10 @@
 import os, csv, pyperclip, json, tkinter.colorchooser
 
-from connection import columna, columna_2
+from connection import columna
 from tkinter import *
 from tkinter import simpledialog, messagebox
 from insert import insertar
 from utils import *
-from mail import correo
 
 
 color_fondo = ""
@@ -257,13 +256,6 @@ def importar():
         messagebox.showerror("Error", "Archivo no encontrado")
 
 
-
-def enviar_correo():
-    email_destino = simpledialog.askstring("Información", "Escribe el correo al que quieras enviar los contactos")
-    contactos = columna.find({})
-    correo(email_destino, contactos)
-
-
 def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla):
 
     ventana = Toplevel(root)
@@ -324,10 +316,6 @@ def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquier
     if color_texto_boton:
         for cambio in [boton_editar, boton_borrar, boton_enviar]:
             cambio.config(fg=color_texto_boton)
-
-    colores = {'colorBackground': color_fondo, 'colorText': color_texto, 'colorButtonText': color_texto_boton, 'colorButton': color_botones}
-    columna_2.drop()
-    columna_2.insert_one(colores)
     ventana.destroy()
 
 
