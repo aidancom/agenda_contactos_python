@@ -210,11 +210,11 @@ def popup(event, tabla, root):
 def privado(item, privado, publico):
     datos = {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3]}
     if privado:
-        datos_nuevos = {"$set": {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3], "privado": True}}
+        datos_nuevos = {"$set": {"privado": True}}
         columna.update_one(datos, datos_nuevos)
         actualizar_tabla_y_base()
     if publico:
-        datos_nuevos = {"$set": {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3], "privado": False}}
+        datos_nuevos = {"$set": {"privado": False}}
         columna.update_one(datos, datos_nuevos)
         actualizar_tabla_y_base()
 
@@ -241,11 +241,11 @@ def eliminar_desde_popup(item):
 def favoritos(item, agregar, quitar):
     datos = {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3]}
     if agregar:
-        datos_nuevos = {"$set": {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3], "favorito": True}}
+        datos_nuevos = {"$set": {"favorito": True}}
         columna.update_one(datos, datos_nuevos)
         actualizar_tabla_y_base()
     if quitar:
-        datos_nuevos = {"$set": {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3], "favorito": False}}
+        datos_nuevos = {"$set": {"favorito": False}}
         columna.update_one(datos, datos_nuevos)
         actualizar_tabla_y_base()
 
@@ -352,7 +352,20 @@ def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos,
 
     ventana.protocol("WM_DELETE_WINDOW", lambda: cerrar(root, ventana))
 
+def backup(root):
+    datos = columna.find({})
+    backup = []
+    ruta = os.path.dirname(__file__)
+    ruta_directorio = f"{ruta}/backup"
+    if not os.path.exists(ruta_directorio):
+        os.mkdir(ruta_directorio)
+    for dato in datos:
+        backup.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito'], "privado": dato['privado']})
 
+    with open(f"{ruta_directorio}/backup.json", "w", encoding="utf-8") as archivo:
+        json.dump(backup, archivo, indent=4)
+
+    root.destroy()
 
 def color(fondo, textos, botones, texto_botones):
     global color_fondo, color_texto, color_botones, color_texto_boton

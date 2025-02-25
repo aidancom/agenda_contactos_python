@@ -82,5 +82,8 @@ cargar_estilos(root, nombre, apellido, numero, email, marco_izquierdo, marco_cam
 tabla.bind("<ButtonRelease-1>", lambda event: seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla))
 tabla.bind("<ButtonRelease-3>", lambda event: popup(event, tabla, root))
 root.config(menu=menu)
+
+root.protocol("WM_DELETE_WINDOW",lambda: backup(root))
+
 root.mainloop()
 
