@@ -49,7 +49,7 @@ submenu_1_1.add_command(label=".txt", command= lambda: exportar(tabla, exportar_
 submenu_1_1.add_command(label=".json", command= lambda: exportar(tabla, exportar_csv=False, exportar_txt=False, exportar_json=True))
 menu.add_cascade(label="Opciones", menu=submenu_1)
 menu.add_cascade(label="Editor", command=lambda: editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla))
-
+menu.add_cascade(label="Enviar Contactos", command=enviar_correo)
 
 ##### CARGAR WIDGETS EN ROOT y REGISTROS EN LA TABLA #####
 
@@ -75,7 +75,7 @@ marco_derecho.pack(fill="both", expand=1, side=LEFT)
 marco_campos.pack(fill="x", expand=1)
 marco_botones.pack(fill="x", expand=1, side=BOTTOM, anchor="w", pady=(10, 0))
 
-cargar()
+cargar(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar)
 
 tabla.bind("<ButtonRelease-1>", lambda event: seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla))
 tabla.bind("<ButtonRelease-3>", lambda event: popup(event, tabla, root))
