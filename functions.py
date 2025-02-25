@@ -263,8 +263,13 @@ def enviar_correo():
     contactos = columna.find({})
     correo(email_destino, contactos)
 
+def cerrar(root, ventana):
+    root.attributes("-disabled", False)
+    ventana.destroy()
 
 def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla):
+
+    root.attributes("-disabled", True)
 
     ventana = Toplevel(root)
     ventana.title("Editor del programa")
@@ -288,6 +293,9 @@ def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos,
     marco_1.pack(fill='x', anchor='w', pady=(0, 10), padx=(10, 10), side=LEFT)
     marco_2.pack(fill='x', anchor='w', pady=(0, 10), padx=(10, 10), side=LEFT)
     Button(ventana, text="Aceptar", command=lambda: editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla)).pack(padx=(5, 10), pady=(0, 10), anchor='e')
+
+    ventana.protocol("WM_DELETE_WINDOW", lambda: cerrar(root, ventana))
+
 
 
 def color(fondo, textos, botones, texto_botones):
@@ -328,7 +336,7 @@ def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquier
     colores = {'colorBackground': color_fondo, 'colorText': color_texto, 'colorButtonText': color_texto_boton, 'colorButton': color_botones}
     columna_2.drop()
     columna_2.insert_one(colores)
-    ventana.destroy()
+    cerrar(root, ventana)
 
 
 
