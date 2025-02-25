@@ -26,7 +26,7 @@ def actualizar_tabla_y_base():
 def insertar_datos():
     numero_registros = simpledialog.askinteger("Registros", "Introduce el numero de registros que deseas agregar")
     insertar(numero_registros)
-    messagebox.showinfo("Hecho", "Datos cargados con éxito")
+    messagebox.showinfo("Hecho", "¡Datos cargados con éxito!")
     actualizar_tabla_y_base()
 
 
@@ -38,7 +38,7 @@ def vaciar():
             opcion = messagebox.askquestion("Advertencia", "¿Seguro que desea vaciar la base de datos? Esta opción no se podra deshacer")
             if opcion == 'yes':
                 columna.drop()
-                messagebox.showinfo("Hecho", "Base de datos vaciada con éxito")
+                messagebox.showinfo("Hecho", "¡Base de datos vaciada con éxito!")
                 actualizar_tabla_y_base()
             else:
                 pass
@@ -62,7 +62,7 @@ def buscar(tabla):
             for registro in res:
                 tabla.insert("", "end", values=(registro['nombre'], registro['apellido'], registro['numero'], registro['correo']))
         else:
-            messagebox.showinfo("Sin registros", "No existo un contacto con ese número")
+            messagebox.showinfo("Sin registros", "No existe un contacto con ese número")
     except ValueError:
         messagebox.showerror("Error", "Carácter no cálido")
     except Exception as e:
@@ -84,7 +84,7 @@ def enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
                 entrada.delete(0, END)
             actualizar_tabla_y_base()
         else:
-            messagebox.showerror("Error", "No pueden haber campos vacios")
+            messagebox.showerror("Error", "No pueden haber campos vacíos")
     except ValueError:
         messagebox.showerror("Error", "Carácter no válido")
     except Exception as e:
@@ -93,15 +93,15 @@ def enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
 
 
 def seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla):
-        tabla_seleccion = tabla.selection()
-        for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
-            entradas.delete(0, END)
-        if tabla_seleccion:
-            tabla_registro = (tabla.item(tabla_seleccion, "values"))
-            nombre_entrada.insert(0, tabla_registro[0])
-            apellido_entrada.insert(0, tabla_registro[1])
-            numero_entrada.insert(0, tabla_registro[2])
-            email_entrada.insert(0, tabla_registro[3])
+    tabla_seleccion = tabla.selection()
+    for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
+        entradas.delete(0, END)
+    if tabla_seleccion:
+        tabla_registro = (tabla.item(tabla_seleccion, "values"))
+        nombre_entrada.insert(0, tabla_registro[0])
+        apellido_entrada.insert(0, tabla_registro[1])
+        numero_entrada.insert(0, tabla_registro[2])
+        email_entrada.insert(0, tabla_registro[3])
 
 
 
@@ -113,10 +113,10 @@ def borrar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
         email = email_entrada.get().lower()
         if nombre and apellido and numero and email:
             contacto = {"nombre": nombre, "apellido": apellido, "numero": int(numero), "correo": email}
-            alerta = messagebox.askquestion("", "Seguro que desea eliminar este campo")
+            alerta = messagebox.askquestion("Alerta", "¿Seguro que desea eliminar este campo?")
             if alerta == 'yes':
                 columna.delete_one(contacto)
-                messagebox.showinfo("Hecho", "Contacto eliminado con éxito")
+                messagebox.showinfo("Hecho", "¡Contacto eliminado con éxito!")
                 for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
                     entradas.delete(0, END)
                 actualizar_tabla_y_base()
@@ -139,7 +139,7 @@ def editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
 
         columna.update_one(filtro, datos_actuales)
 
-        messagebox.showinfo("Editado", "Contacto editado con éxito")
+        messagebox.showinfo("Hecho", "¡Contacto editado con éxito!")
 
         for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
             entradas.delete(0, END)
@@ -160,7 +160,7 @@ def exportar(tabla, exportar_csv, exportar_txt, exportar_json):
             for datos in tabla.get_children():
                 dato = tabla.item(datos, "values")
                 archivo.write(f"Nombre: {dato[0]}\nApellido: {dato[1]}\nTeléfono: {dato[2]}\nCorreo: {dato[3]}\n\n")
-        abrir = messagebox.askquestion("Hecho", "Contactos exportados a txt con éxito, ¿Quieres abrir el archivo?")
+        abrir = messagebox.askquestion("Hecho", "¡Contactos exportados a txt con éxito!, ¿Quieres abrir el archivo?")
         if abrir:
             os.startfile(f"{ruta_directorio}/contactos.txt")
     if exportar_csv:
@@ -170,7 +170,7 @@ def exportar(tabla, exportar_csv, exportar_txt, exportar_json):
             for datos in tabla.get_children():
                 dato = tabla.item(datos, "values")
                 writer.writerow(dato)
-        abrir = messagebox.askquestion("Hecho", "Contactos exportados a csv con éxito, ¿Quieres abrir el archivo?")
+        abrir = messagebox.askquestion("Hecho", "¡Contactos exportados a csv con éxito!, ¿Quieres abrir el archivo?")
         if abrir:
             os.startfile(f"{ruta_directorio}/contactos.csv")
     if exportar_json:
@@ -180,7 +180,7 @@ def exportar(tabla, exportar_csv, exportar_txt, exportar_json):
             datos.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito']})
         with open(f"{ruta_directorio}/contactos.json", "w") as archivo:
             json.dump(datos, archivo, indent=4)
-        abrir = messagebox.askquestion("Hecho", "Contactos exportados a json con éxito, ¿Quieres abrir el archivo?")
+        abrir = messagebox.askquestion("Hecho", "¡Contactos exportados a json con éxito!, ¿Quieres abrir el archivo?")
         if abrir:
             os.startfile(f"{ruta_directorio}/contactos.json")
 
@@ -216,7 +216,7 @@ def eliminar_desde_popup(item):
     eliminar = messagebox.askquestion("Atención", "¿Desea eliminar este contacto? No se podrá deshacer")
     if eliminar:
         columna.delete_one(datos)
-        messagebox.showinfo("Hecho", "Contacto eliminado con éxito")
+        messagebox.showinfo("Hecho", "¡Contacto eliminado con éxito!")
         actualizar_tabla_y_base()
     else:
         pass
@@ -250,7 +250,7 @@ def importar():
         ruta = os.path.dirname(__file__)
         with open(f"{ruta}/archivos/contactos.json", "r") as archivo:
             columna.insert_many(json.load(archivo))
-        messagebox.showinfo("Hecho", "Contactos importados con éxito")
+        messagebox.showinfo("Hecho", "¡Contactos importados con éxito!")
         actualizar_tabla_y_base()
     except FileNotFoundError:
         messagebox.showerror("Error", "Archivo no encontrado")

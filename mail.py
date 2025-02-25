@@ -29,7 +29,7 @@ def correo(email_destino, contactos):
         smtp_server.login(sender, password)
         smtp_server.sendmail(sender, to, message.as_string())
         smtp_server.close()
-        messagebox.showinfo("Hecho", "Mensaje enviado con éxito")
+        messagebox.showinfo("Hecho", "¡Mensaje enviado con éxito!")
     except TypeError:
         pass
     except Exception as e:
