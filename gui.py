@@ -4,6 +4,7 @@ from functions import *
 
 ##### CREAR WIDGETS Y EL ROOT #####
 
+
 root = Tk()
 root.title("Agenda de contactos")
 
@@ -63,7 +64,6 @@ submenu_2.add_command(label="Modo oscuro", command=lambda: modo(root, nombre, ap
 submenu_2.add_command(label="Editor", command=lambda: editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar))
 
 menu.add_cascade(label="Enviar Contactos", command=enviar_correo)
-
 
 
 ##### CARGAR WIDGETS EN ROOT y REGISTROS EN LA TABLA #####

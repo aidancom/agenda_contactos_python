@@ -1,4 +1,5 @@
 import os, csv, pyperclip, json, tkinter.colorchooser
+from itertools import count
 
 from connection import columna, columna_2, columna_3
 from tkinter import *
@@ -207,6 +208,8 @@ def popup(event, tabla, root):
             popup.add_command(label="Hacer público", command=lambda: privado(item, privado=False, publico=True))
         popup.tk_popup(event.x_root, event.y_root, None)
 
+
+
 def privado(item, privado, publico):
     datos = {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3]}
     if privado:
@@ -219,6 +222,7 @@ def privado(item, privado, publico):
         actualizar_tabla_y_base()
 
 
+
 def copiar_dato(item):
     dato = " ".join(item)
     pyperclip.copy(dato)
@@ -229,7 +233,7 @@ def copiar_dato(item):
 def eliminar_desde_popup(item):
     datos = {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3]}
     eliminar = messagebox.askquestion("Atención", "¿Desea eliminar este contacto?")
-    if eliminar:
+    if eliminar == 'yes':
         columna.delete_one(datos)
         columna_3.insert_one(datos)
         messagebox.showinfo("Hecho", "¡Contacto eliminado con éxito!")
@@ -253,11 +257,16 @@ def favoritos(item, agregar, quitar):
 
 
 def ver_favoritos(tabla):
-    borrar_tabla()
     consulta = [{"$match": {"favorito": True}}]
     favoritos = columna.aggregate(consulta)
-    for favorito in favoritos:
-        tabla.insert("", "end", values=(favorito['nombre'], favorito['apellido'], favorito['numero'], favorito['correo']))
+    if columna.count_documents({"favorito": True}) == 0:
+        messagebox.showinfo("Atención", "No hay contactos favoritos")
+    else:
+        borrar_tabla()
+        for favorito in favoritos:
+            tabla.insert("", "end", values=(favorito['nombre'], favorito['apellido'], favorito['numero'], favorito['correo']))
+
+
 
 def acceso(tabla, root):
 
@@ -297,9 +306,6 @@ def ver_privados(root, tabla, user, password, creedenciales):
         cerrar(root, creedenciales)
     else:
         messagebox.showerror("Error", "Usuario o contraseña incorrectos")
-        cerrar(root, creedenciales)
-
-
 
 
 
@@ -320,9 +326,13 @@ def enviar_correo():
     contactos = columna.find({})
     correo(email_destino, contactos)
 
+
+
 def cerrar(root, ventana):
     root.attributes("-disabled", False)
     ventana.destroy()
+
+
 
 def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar):
 
@@ -353,6 +363,8 @@ def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos,
 
     ventana.protocol("WM_DELETE_WINDOW", lambda: cerrar(root, ventana))
 
+
+
 def backup(root):
     datos = columna.find({})
     backup = []
@@ -367,6 +379,8 @@ def backup(root):
         json.dump(backup, archivo, indent=4)
 
     root.destroy()
+
+
 
 def color(fondo, textos, botones, texto_botones):
     global color_fondo, color_texto, color_botones, color_texto_boton
@@ -407,6 +421,8 @@ def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquier
     columna_2.drop()
     columna_2.insert_one(colores)
     cerrar(root, ventana)
+
+
 
 def modo(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, boton_editar, boton_borrar, boton_enviar, claro, oscuro):
     if oscuro:
@@ -454,6 +470,7 @@ def eliminados(root):
     caja.pack()
     ventana.protocol("WM_DELETE_WINDOW", lambda: cerrar(root, ventana))
     ventana.mainloop()
+
 
 
 def reestablecer(datos, caja, ventana, root):
