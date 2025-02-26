@@ -1,7 +1,6 @@
 import os, csv, pyperclip, json, tkinter.colorchooser
-from imghdr import test_exr
 
-from connection import columna, columna_2
+from connection import columna, columna_2, columna_3
 from tkinter import *
 from tkinter import simpledialog, messagebox
 from insert import insertar
@@ -117,6 +116,7 @@ def borrar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
             alerta = messagebox.askquestion("Alerta", "¿Seguro que desea eliminar este campo?")
             if alerta == 'yes':
                 columna.delete_one(contacto)
+                columna_3.insert_one(contacto)
                 messagebox.showinfo("Hecho", "¡Contacto eliminado con éxito!")
                 for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
                     entradas.delete(0, END)
@@ -228,9 +228,10 @@ def copiar_dato(item):
 
 def eliminar_desde_popup(item):
     datos = {"nombre": item[0], "apellido": item[1], "numero": int(item[2]), "correo": item[3]}
-    eliminar = messagebox.askquestion("Atención", "¿Desea eliminar este contacto? No se podrá deshacer")
+    eliminar = messagebox.askquestion("Atención", "¿Desea eliminar este contacto?")
     if eliminar:
         columna.delete_one(datos)
+        columna_3.insert_one(datos)
         messagebox.showinfo("Hecho", "¡Contacto eliminado con éxito!")
         actualizar_tabla_y_base()
     else:
@@ -323,7 +324,7 @@ def cerrar(root, ventana):
     root.attributes("-disabled", False)
     ventana.destroy()
 
-def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla):
+def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar):
 
     root.attributes("-disabled", True)
 
@@ -348,7 +349,7 @@ def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos,
     marco_primero.pack()
     marco_1.pack(fill='x', anchor='w', pady=(0, 10), padx=(10, 10), side=LEFT)
     marco_2.pack(fill='x', anchor='w', pady=(0, 10), padx=(10, 10), side=LEFT)
-    Button(ventana, text="Aceptar", command=lambda: editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla)).pack(padx=(5, 10), pady=(0, 10), anchor='e')
+    Button(ventana, text="Aceptar", command=lambda: editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, boton_editar, boton_borrar, boton_enviar)).pack(padx=(5, 10), pady=(0, 10), anchor='e')
 
     ventana.protocol("WM_DELETE_WINDOW", lambda: cerrar(root, ventana))
 
@@ -384,7 +385,7 @@ def color(fondo, textos, botones, texto_botones):
 
 
 
-def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla):
+def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, boton_editar, boton_borrar, boton_enviar):
     global color_fondo, color_texto, color_botones, texto_botones
     if color_fondo:
         for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email]:
@@ -407,5 +408,64 @@ def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquier
     columna_2.insert_one(colores)
     cerrar(root, ventana)
 
+def modo(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, boton_editar, boton_borrar, boton_enviar, claro, oscuro):
+    if oscuro:
+        for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]:
+            cambio.config(bg="#000000")
+        for cambio in [nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]:
+            cambio.config(fg="#FFFFFF")
+        colores = {'colorBackground': "#000000", 'colorText': "#FFFFFF", 'colorButtonText': "#FFFFFF",
+                   'colorButton': "#000000"}
+        columna_2.drop()
+        columna_2.insert_one(colores)
+    if claro:
+        for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]:
+            cambio.config(bg="#FFFFFF")
+        for cambio in [nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]:
+            cambio.config(fg="#000000")
+        colores = {'colorBackground': "#FFFFFF", 'colorText': "#000000", 'colorButtonText': "#000000",
+                   'colorButton': "#FFFFFF"}
+        columna_2.drop()
+        columna_2.insert_one(colores)
 
+
+
+def eliminados(root):
+    contactos_eliminados = columna_3.find({})
+    datos = []
+    root.attributes("-disabled", True)
+    for eliminado in contactos_eliminados:
+        datos.append({"nombre": eliminado['nombre'], "apellido": eliminado['apellido'], "numero": eliminado['numero'], "correo": eliminado['correo'], "favorito": False, "privado": False})
+
+    ventana = Toplevel(root)
+    ventana.resizable(False, False)
+    marco_texto = Frame(ventana, pady=5)
+    marco_boton = Frame(ventana, pady=10)
+
+    caja = Text(marco_texto, padx=10, pady=10, width=60, height=10)
+
+    for dato in datos:
+        caja.insert(END, f"{dato['nombre']} - {dato['apellido']} - {dato['numero']} - {dato['correo']}\n")
+
+    Button(marco_boton, text="Reestablecer contactos", command=lambda: reestablecer(datos, caja, ventana, root)).pack()
+
+    marco_texto.pack()
+    marco_boton.pack()
+    caja.pack()
+    ventana.protocol("WM_DELETE_WINDOW", lambda: cerrar(root, ventana))
+    ventana.mainloop()
+
+
+def reestablecer(datos, caja, ventana, root):
+
+    if len(datos) == 0:
+        messagebox.showinfo("Atención", "No hay contactos eliminados")
+    else:
+        columna.insert_many(datos)
+        columna_3.drop()
+        messagebox.showinfo("Hecho", "¡Contactos recuperados con éxito!")
+        caja.delete("1.0", END)
+        actualizar_tabla_y_base()
+        ventana.destroy()
+    cerrar(root, ventana)
 

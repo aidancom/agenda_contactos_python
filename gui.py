@@ -37,7 +37,10 @@ set_tabla(tabla)
 
 menu = Menu(root, tearoff=0)
 submenu_1 = Menu(menu, tearoff=0)
+submenu_2 = Menu(menu, tearoff=0)
 submenu_1_1 = Menu(submenu_1, tearoff=0)
+
+menu.add_cascade(label="Opciones", menu=submenu_1)
 submenu_1.add_command(label="Buscar contacto", command=lambda: buscar(tabla))
 submenu_1.add_command(label="Insertar registros", command=insertar_datos)
 submenu_1.add_command(label="Vaciar base de datos", command=vaciar)
@@ -45,12 +48,19 @@ submenu_1.add_cascade(label="Exportar contactos", menu=submenu_1_1)
 submenu_1.add_command(label="Importar contactos", command=importar)
 submenu_1.add_command(label="Ver favoritos", command=lambda: ver_favoritos(tabla))
 submenu_1.add_command(label="Ver contactos privados", command=lambda: acceso(tabla, root))
+submenu_1.add_command(label="Eliminados", command=lambda: eliminados(root))
 submenu_1_1.add_command(label=".csv", command=lambda: exportar(tabla, exportar_csv=True, exportar_txt=False, exportar_json=False))
 submenu_1_1.add_command(label=".txt", command= lambda: exportar(tabla, exportar_csv=False, exportar_txt=True, exportar_json=False))
 submenu_1_1.add_command(label=".json", command= lambda: exportar(tabla, exportar_csv=False, exportar_txt=False, exportar_json=True))
-menu.add_cascade(label="Opciones", menu=submenu_1)
-menu.add_cascade(label="Editor", command=lambda: editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar, tabla))
+
+menu.add_cascade(label="Personalizar", menu=submenu_2)
+submenu_2.add_command(label="Modo claro", command=lambda: modo(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, boton_editar, boton_borrar, boton_enviar, claro=True, oscuro=False))
+submenu_2.add_command(label="Modo oscuro", command=lambda: modo(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, boton_editar, boton_borrar, boton_enviar, claro=False, oscuro=True))
+submenu_2.add_command(label="Editor", command=lambda: editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, nombre_entrada, apellido_entrada, numero_entrada, email_entrada, boton_editar, boton_borrar, boton_enviar))
+
 menu.add_cascade(label="Enviar Contactos", command=enviar_correo)
+
+
 
 ##### CARGAR WIDGETS EN ROOT y REGISTROS EN LA TABLA #####
 
