@@ -178,7 +178,7 @@ def exportar(tabla, exportar_csv, exportar_txt, exportar_json):
         datos_exportar = columna.find({})
         datos = []
         for dato in datos_exportar:
-            datos.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito']})
+            datos.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito'], "privado": dato['privado']})
         with open(f"{ruta_directorio}/contactos.json", "w") as archivo:
             json.dump(datos, archivo, indent=4)
         abrir = messagebox.askquestion("Hecho", "¡Contactos exportados a json con éxito!, ¿Quieres abrir el archivo?")
