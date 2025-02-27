@@ -12,7 +12,7 @@ def insertar(numero_registros):
         nombre_registro = random.choice(nombre)
         apellido_registro = random.choice(apellido)
         numero_registro = random.randint(900000000, 999999999)
-        correo_registro = f"{random.randint(000, 999)}{nombre_registro.lower()}{random.randint(000, 999)}{random.choice(correo)}"
+        correo_registro = f"{random.randint(000, 999)}{nombre_registro.lower()}{random.randint(000, 999)}@{random.choice(correo)}"
 
         dato = {
             "nombre": nombre_registro,
