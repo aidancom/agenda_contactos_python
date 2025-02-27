@@ -97,7 +97,7 @@ tabla.bind("<ButtonRelease-1>", lambda event: seleccion_contacto(nombre_entrada,
 tabla.bind("<ButtonRelease-3>", lambda event: popup(event, tabla, root))
 root.config(menu=menu)
 
-root.protocol("WM_DELETE_WINDOW",lambda: backup(root))
+root.protocol("WM_DELETE_WINDOW", lambda: backup(root))
 
 root.mainloop()
 

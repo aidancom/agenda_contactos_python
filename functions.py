@@ -1,5 +1,4 @@
 import os, csv, pyperclip, json, tkinter.colorchooser
-from itertools import count
 
 from connection import columna, columna_2, columna_3
 from tkinter import *
@@ -20,9 +19,7 @@ tipo_borde = ""
 
 
 def actualizar_tabla_y_base():
-    borrar_tabla()
-    cargar_tabla()
-
+    borrar_tabla(), cargar_tabla()
 
 def insertar_datos():
     numero_registros = simpledialog.askinteger("Registros", "Introduce el numero de registros que deseas agregar")
@@ -55,8 +52,7 @@ def vaciar():
 def buscar(tabla):
     try:
         numero = simpledialog.askinteger("Buscar un contacto", "Introduzca el numero que desea buscar")
-        pipeline = [{"$match": {"numero": numero}}]
-        res = columna.aggregate(pipeline)
+        res = columna.aggregate([{"$match": {"numero": numero}}])
         contador = columna.count_documents({"numero": numero})
         if contador > 0:
             borrar_tabla()
@@ -151,22 +147,22 @@ def editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
 
 
 def exportar(tabla, exportar_csv, exportar_txt, exportar_json):
-    ruta = os.path.dirname(__file__)
-    ruta_directorio = f"{ruta}/archivos"
+    ruta = os.getcwd()
+    ruta_directorio = os.path.join(ruta, "archivos")
 
     if not os.path.exists(ruta_directorio):
         os.mkdir(ruta_directorio)
 
     if exportar_txt:
-        with open(f"{ruta_directorio}/contactos.txt", "w") as archivo:
+        with open(os.path.join(ruta_directorio, "contactos.txt"), "w") as archivo:
             for datos in tabla.get_children():
                 dato = tabla.item(datos, "values")
                 archivo.write(f"Nombre: {dato[0]}\nApellido: {dato[1]}\nTeléfono: {dato[2]}\nCorreo: {dato[3]}\n\n")
         abrir = messagebox.askquestion("Hecho", "¡Contactos exportados a txt con éxito!, ¿Quieres abrir el archivo?")
         if abrir:
-            os.startfile(f"{ruta_directorio}/contactos.txt")
+            os.startfile(os.path.join(ruta_directorio, "contactos.txt"))
     if exportar_csv:
-        with open(f"{ruta_directorio}/contactos.csv", "w", newline="") as archivo:
+        with open(os.path.join(ruta_directorio, "contactos.csv"), "w", newline="") as archivo:
             writer = csv.writer(archivo)
             writer.writerow(["Nombre", "Apellido", "Teléfono", "Correo"])
             for datos in tabla.get_children():
@@ -174,17 +170,17 @@ def exportar(tabla, exportar_csv, exportar_txt, exportar_json):
                 writer.writerow(dato)
         abrir = messagebox.askquestion("Hecho", "¡Contactos exportados a csv con éxito!, ¿Quieres abrir el archivo?")
         if abrir:
-            os.startfile(f"{ruta_directorio}/contactos.csv")
+            os.startfile(os.path.join(ruta_directorio, "contactos.csv"))
     if exportar_json:
         datos_exportar = columna.find({})
         datos = []
         for dato in datos_exportar:
             datos.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito'], "privado": dato['privado']})
-        with open(f"{ruta_directorio}/contactos.json", "w") as archivo:
+        with open(os.path.join(ruta_directorio, "contactos.json"), "w") as archivo:
             json.dump(datos, archivo, indent=4)
         abrir = messagebox.askquestion("Hecho", "¡Contactos exportados a json con éxito!, ¿Quieres abrir el archivo?")
         if abrir:
-            os.startfile(f"{ruta_directorio}/contactos.json")
+            os.startfile(os.path.join(ruta_directorio, "contactos.json"))
 
 
 
@@ -295,24 +291,31 @@ def acceso(tabla, root):
 
 
 def ver_privados(root, tabla, user, password, creedenciales):
-    if user.get() == 'admin' and password.get() == 'admin':
-        borrar_tabla()
-        consulta = [{"$match": {"privado": True}}]
-        privados = columna.aggregate(consulta)
-        for privado in privados:
-            tabla.insert("", "end",
-                         values=(privado['nombre'], privado['apellido'], privado['numero'], privado['correo']))
+    consulta = [{"$match": {"privado": True}}]
+    privados = columna.aggregate(consulta)
+    if columna.count_documents({"privado": True}) > 0:
+        if user.get() == 'admin' and password.get() == 'admin':
+            borrar_tabla()
+
+            for privado in privados:
+                tabla.insert("", "end",
+                             values=(privado['nombre'], privado['apellido'], privado['numero'], privado['correo']))
+            creedenciales.destroy()
+            cerrar(root, creedenciales)
+        else:
+            messagebox.showerror("Error", "Usuario o contraseña incorrectos")
+    else:
+        messagebox.showinfo("Atención", "No hay contactos privados")
         creedenciales.destroy()
         cerrar(root, creedenciales)
-    else:
-        messagebox.showerror("Error", "Usuario o contraseña incorrectos")
 
 
 
 def importar():
     try:
-        ruta = os.path.dirname(__file__)
-        with open(f"{ruta}/archivos/contactos.json", "r") as archivo:
+        ruta = os.getcwd()
+        ruta_directorio = os.path.join(ruta, "archivos")
+        with open(os.path.join(ruta_directorio, "contactos.json"), "r") as archivo:
             columna.insert_many(json.load(archivo))
         messagebox.showinfo("Hecho", "¡Contactos importados con éxito!")
         actualizar_tabla_y_base()
@@ -368,14 +371,14 @@ def editor(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos,
 def backup(root):
     datos = columna.find({})
     backup = []
-    ruta = os.path.dirname(__file__)
-    ruta_directorio = f"{ruta}/backup"
+    ruta = os.getcwd()
+    ruta_directorio = os.path.join(ruta, "backup")
     if not os.path.exists(ruta_directorio):
         os.mkdir(ruta_directorio)
     for dato in datos:
         backup.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito'], "privado": dato['privado']})
 
-    with open(f"{ruta_directorio}/backup.json", "w", encoding="utf-8") as archivo:
+    with open(os.path.join(ruta_directorio, "backup.json"), "w", encoding="utf-8") as archivo:
         json.dump(backup, archivo, indent=4)
 
     root.destroy()
