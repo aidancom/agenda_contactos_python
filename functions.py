@@ -74,7 +74,7 @@ def enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
         numero = int(numero_entrada.get())
         email = email_entrada.get().lower()
         if nombre and apellido and numero and email:
-            contacto = {"nombre": nombre, "apellido": apellido, "numero": numero, "correo": email, "favorito": False}
+            contacto = {"nombre": nombre, "apellido": apellido, "numero": numero, "correo": email, "favorito": False, "privado": False}
             columna.insert_one(contacto)
             messagebox.showinfo("Hecho", "Contacto añadido con éxito")
             for entrada in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
