@@ -1,11 +1,13 @@
-import smtplib
+import smtplib, os
+from dotenv import load_dotenv
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from tkinter import messagebox
 
 def correo(email_destino, contactos):
+    load_dotenv()
     sender = '19aidan99@gmail.com'
-    password = 'ypkc amhe njxh otyt'
+    password = os.getenv('MAIL_KEY')
     server = 'smtp.gmail.com'
     port = 465
     to = email_destino

@@ -1,6 +1,8 @@
-import pymongo
+import pymongo, os
+from dotenv import load_dotenv
 
-connection = pymongo.MongoClient("mongodb+srv://root:Aidan9919.@cluster0.nywpd.mongodb.net/")
+load_dotenv()
+connection = pymongo.MongoClient(f"mongodb+srv://root:{os.getenv('DATABASE_KEY')}@cluster0.nywpd.mongodb.net/")
 database = connection["agenda"]
 
 columna = database["contactos"]
