@@ -1,4 +1,4 @@
-import os, csv, pyperclip, json, tkinter.colorchooser
+import os, csv, pyperclip, json, tkinter.colorchooser, re
 
 from connection import columna, columna_2, columna_3
 from tkinter import *
@@ -8,14 +8,8 @@ from utils import *
 from mail import correo
 
 
-color_fondo = ""
-color_texto = ""
-color_texto_boton = ""
-color_botones = ""
-color_borde_normal = ""
-color_borde_resaltado = ""
-grosor_borde = ""
-tipo_borde = ""
+color_fondo, color_texto, color_texto_boton, color_botones, color_borde_normal, color_borde_resaltado, grosor_borde, tipo_borde = "", "", "", "", "", "", "", ""
+validar_correo = r"[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-z]{2,5}"
 
 
 def actualizar_tabla_y_base():
@@ -56,8 +50,7 @@ def buscar(tabla):
         contador = columna.count_documents({"numero": numero})
         if contador > 0:
             borrar_tabla()
-            for registro in res:
-                tabla.insert("", "end", values=(registro['nombre'], registro['apellido'], registro['numero'], registro['correo']))
+            [tabla.insert("", "end", values=(registro['nombre'], registro['apellido'], registro['numero'], registro['correo'])) for registro in res]
         else:
             messagebox.showinfo("Sin registros", "No existe un contacto con ese número")
     except ValueError:
@@ -74,12 +67,14 @@ def enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
         numero = int(numero_entrada.get())
         email = email_entrada.get().lower()
         if nombre and apellido and numero and email:
-            contacto = {"nombre": nombre, "apellido": apellido, "numero": numero, "correo": email, "favorito": False, "privado": False}
-            columna.insert_one(contacto)
-            messagebox.showinfo("Hecho", "Contacto añadido con éxito")
-            for entrada in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
-                entrada.delete(0, END)
-            actualizar_tabla_y_base()
+            if re.match(validar_correo, email) is not None:
+                contacto = {"nombre": nombre, "apellido": apellido, "numero": numero, "correo": email, "favorito": False, "privado": False}
+                columna.insert_one(contacto)
+                messagebox.showinfo("Hecho", "Contacto añadido con éxito")
+                [entrada.delete(0, END) for entrada in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]]
+                actualizar_tabla_y_base()
+            else:
+                messagebox.showerror("Error", "Correo no válido")
         else:
             messagebox.showerror("Error", "No pueden haber campos vacíos")
     except ValueError:
@@ -91,8 +86,7 @@ def enviar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
 
 def seleccion_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entrada, tabla):
     tabla_seleccion = tabla.selection()
-    for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
-        entradas.delete(0, END)
+    [entrada.delete(0, END) for entrada in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]]
     if tabla_seleccion:
         tabla_registro = (tabla.item(tabla_seleccion, "values"))
         nombre_entrada.insert(0, tabla_registro[0])
@@ -115,8 +109,7 @@ def borrar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
                 columna.delete_one(contacto)
                 columna_3.insert_one(contacto)
                 messagebox.showinfo("Hecho", "¡Contacto eliminado con éxito!")
-                for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
-                    entradas.delete(0, END)
+                [entrada.delete(0, END) for entrada in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]]
                 actualizar_tabla_y_base()
 
 
@@ -139,8 +132,7 @@ def editar_contacto(nombre_entrada, apellido_entrada, numero_entrada, email_entr
 
         messagebox.showinfo("Hecho", "¡Contacto editado con éxito!")
 
-        for entradas in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]:
-            entradas.delete(0, END)
+        [entrada.delete(0, END) for entrada in [nombre_entrada, apellido_entrada, numero_entrada, email_entrada]]
 
         actualizar_tabla_y_base()
 
@@ -174,8 +166,7 @@ def exportar(tabla, exportar_csv, exportar_txt, exportar_json):
     if exportar_json:
         datos_exportar = columna.find({})
         datos = []
-        for dato in datos_exportar:
-            datos.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito'], "privado": dato['privado']})
+        [datos.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito'], "privado": dato['privado']}) for dato in datos_exportar]
         with open(os.path.join(ruta_directorio, "contactos.json"), "w") as archivo:
             json.dump(datos, archivo, indent=4)
         abrir = messagebox.askquestion("Hecho", "¡Contactos exportados a json con éxito!, ¿Quieres abrir el archivo?")
@@ -375,8 +366,7 @@ def backup(root):
     ruta_directorio = os.path.join(ruta, "backup")
     if not os.path.exists(ruta_directorio):
         os.mkdir(ruta_directorio)
-    for dato in datos:
-        backup.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito'], "privado": dato['privado']})
+    [backup.append({"nombre": dato['nombre'], "apellido": dato['apellido'], "numero": dato['numero'], "correo": dato['correo'], "favorito": dato['favorito'], "privado": dato['privado']}) for dato in datos]
 
     with open(os.path.join(ruta_directorio, "backup.json"), "w", encoding="utf-8") as archivo:
         json.dump(backup, archivo, indent=4)
@@ -405,20 +395,17 @@ def color(fondo, textos, botones, texto_botones):
 def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, boton_editar, boton_borrar, boton_enviar):
     global color_fondo, color_texto, color_botones, texto_botones
     if color_fondo:
-        for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email]:
-            cambio.config(bg=color_fondo)
+        [cambio.config(bg=color_fondo) for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email]]
 
     if color_texto:
-        for cambio in [nombre, apellido, numero, email]:
-            cambio.config(fg=color_texto)
+        [cambio.config(fg=color_texto) for cambio in [nombre, apellido, numero, email]]
 
     if color_botones:
-        for cambio in [boton_editar, boton_borrar, boton_enviar]:
-            cambio.config(bg=color_botones)
+        [cambio.config(bg=color_botones) for cambio in [boton_editar, boton_borrar, boton_enviar]]
 
     if color_texto_boton:
-        for cambio in [boton_editar, boton_borrar, boton_enviar]:
-            cambio.config(fg=color_texto_boton)
+        [cambio.config(fg=color_texto_boton) for cambio in [boton_editar, boton_borrar, boton_enviar]]
+
 
     colores = {'colorBackground': color_fondo, 'colorText': color_texto, 'colorButtonText': color_texto_boton, 'colorButton': color_botones}
     columna_2.drop()
@@ -429,21 +416,15 @@ def editor_ventana(ventana, root, nombre, apellido, numero, email, marco_izquier
 
 def modo(root, nombre, apellido, numero, email, marco_izquierdo, marco_campos, marco_botones, boton_editar, boton_borrar, boton_enviar, claro, oscuro):
     if oscuro:
-        for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]:
-            cambio.config(bg="#000000")
-        for cambio in [nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]:
-            cambio.config(fg="#FFFFFF")
-        colores = {'colorBackground': "#000000", 'colorText': "#FFFFFF", 'colorButtonText': "#FFFFFF",
-                   'colorButton': "#000000"}
+        [cambio.config(bg="#000000") for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]]
+        [cambio.config(bg="#FFFFFF") for cambio in [nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]]
+        colores = {'colorBackground': "#000000", 'colorText': "#FFFFFF", 'colorButtonText': "#FFFFFF", 'colorButton': "#000000"}
         columna_2.drop()
         columna_2.insert_one(colores)
     if claro:
-        for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]:
-            cambio.config(bg="#FFFFFF")
-        for cambio in [nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]:
-            cambio.config(fg="#000000")
-        colores = {'colorBackground': "#FFFFFF", 'colorText': "#000000", 'colorButtonText': "#000000",
-                   'colorButton': "#FFFFFF"}
+        [cambio.config(bg="#FFFFFF") for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]]
+        [cambio.config(bg="#000000") for cambio in [nombre, apellido, numero, email, boton_editar, boton_borrar, boton_enviar]]
+        colores = {'colorBackground': "#FFFFFF", 'colorText': "#000000", 'colorButtonText': "#000000", 'colorButton': "#FFFFFF"}
         columna_2.drop()
         columna_2.insert_one(colores)
 
@@ -453,8 +434,7 @@ def eliminados(root):
     contactos_eliminados = columna_3.find({})
     datos = []
     root.attributes("-disabled", True)
-    for eliminado in contactos_eliminados:
-        datos.append({"nombre": eliminado['nombre'], "apellido": eliminado['apellido'], "numero": eliminado['numero'], "correo": eliminado['correo'], "favorito": False, "privado": False})
+    [datos.append({"nombre": eliminado['nombre'], "apellido": eliminado['apellido'], "numero": eliminado['numero'], "correo": eliminado['correo'], "favorito": False, "privado": False}) for eliminado in contactos_eliminados]
 
     ventana = Toplevel(root)
     ventana.resizable(False, False)
@@ -462,9 +442,7 @@ def eliminados(root):
     marco_boton = Frame(ventana, pady=10)
 
     caja = Text(marco_texto, padx=10, pady=10, width=60, height=10)
-
-    for dato in datos:
-        caja.insert(END, f"{dato['nombre']} - {dato['apellido']} - {dato['numero']} - {dato['correo']}\n")
+    [caja.insert(END, f"{dato['nombre']} - {dato['apellido']} - {dato['numero']} - {dato['correo']}\n") for dato in datos]
 
     Button(marco_boton, text="Reestablecer contactos", command=lambda: reestablecer(datos, caja, ventana, root)).pack()
 

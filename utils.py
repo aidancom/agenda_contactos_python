@@ -11,9 +11,7 @@ def set_tabla(tabla):
 
 def cargar_tabla():
     datos = columna.find({})
-    for dato in datos:
-        if not dato['privado']:
-            tabla_global.insert("", "end", values=(dato['nombre'], dato['apellido'], dato['numero'], dato['correo']))
+    [tabla_global.insert("", "end", values=(dato['nombre'], dato['apellido'], dato['numero'], dato['correo'])) for dato in datos if not dato['privado']]
 
 
 
@@ -23,23 +21,18 @@ def cargar_estilos(root, nombre, apellido, numero, email, marco_izquierdo, marco
 
     for color in colores:
         if color['colorBackground']:
-            for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email]:
-                cambio.config(bg=color['colorBackground'])
+            [cambio.config(bg=color['colorBackground']) for cambio in [root, marco_campos, marco_botones, marco_izquierdo, nombre, apellido, numero, email]]
 
         if color['colorText']:
-            for cambio in [nombre, apellido, numero, email]:
-                cambio.config(fg=color['colorText'])
+            [cambio.config(fg=color['colorText']) for cambio in [nombre, apellido, numero, email]]
 
         if color['colorButton']:
-            for cambio in [boton_editar, boton_borrar, boton_enviar]:
-                cambio.config(bg=color['colorButton'])
+            [cambio.config(bg=color['colorButton']) for cambio in [boton_editar, boton_borrar, boton_enviar]]
 
         if color['colorButtonText']:
-            for cambio in [boton_editar, boton_borrar, boton_enviar]:
-                cambio.config(fg=color['colorButtonText'])
+            [cambio.config(fg=color['colorButtonText']) for cambio in [boton_editar, boton_borrar, boton_enviar]]
 
 
 
 def borrar_tabla():
-    for fila in tabla_global.get_children():
-        tabla_global.delete(fila)
+    [tabla_global.delete(fila) for fila in tabla_global.get_children()]

@@ -30,6 +30,7 @@ boton_editar = Button(marco_botones, text="Editar", command=lambda: editar_conta
 
 cabecera = ("Nombre", "Apellido", "Número", "Correo")
 tabla = Treeview(marco_derecho, columns=cabecera, show="headings")
+
 for insert in cabecera:
     tabla.column(column=insert, width=100)
     tabla.heading(insert, text=insert)
@@ -69,8 +70,7 @@ menu.add_cascade(label="Enviar Contactos", command=enviar_correo)
 ##### CARGAR WIDGETS EN ROOT y REGISTROS EN LA TABLA #####
 
 
-for boton in [boton_enviar, boton_borrar, boton_editar]:
-    boton.pack(side=LEFT, padx=(0, 10))
+[boton.pack(side=LEFT, padx=(0, 10)) for boton in [boton_enviar, boton_borrar, boton_editar]]
 
 tabla.pack(fill="both", expand=1)
 
